@@ -1,6 +1,6 @@
 # Makefile
 
-.PHONY: code-coverage server prod-server test unit-test integration-test black isort flake8 bandit requirements jaeger-start
+.PHONY: code-coverage server prod-server test unit-test integration-test black isort flake8 bandit sql-fix sql-check requirements jaeger-start
 
 code-coverage:
 	poetry run pytest --cov=src tests/
@@ -31,6 +31,12 @@ flake8:
 
 bandit:
 	poetry run bandit -r src/ tests/ -c bandit.yaml
+
+sql-fix:
+	poetry run sqlfluff fix .
+
+sql-check:
+	poetry run sqlfluff lint .
 
 lint-all: black isort flake8 bandit
 

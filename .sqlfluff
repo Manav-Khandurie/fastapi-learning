@@ -1,0 +1,11 @@
+[sqlfluff]
+dialect = ansi 
+
+[sqlfluff:rules]
+# You can enable/disable specific rules here
+# For example:
+# L003 = allow
+# L009 = warn
+
+[sqlfluff:templater]
+templater = jinja  # if you're using SQL templates (optional)
