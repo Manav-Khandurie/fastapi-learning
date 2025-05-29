@@ -27,7 +27,12 @@ repos:
     - id: bandit
       args: ["-c", "bandit.yaml","-r", "src/"]
   
-  
+  - repo: https://github.com/sqlfluff/sqlfluff
+    rev: 3.0.4
+    hooks:
+      - id: sqlfluff-lint
+        files: \.sql$
+        args: ["--config", ".sqlfluff"]
 
 
   
