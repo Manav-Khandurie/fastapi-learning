@@ -38,7 +38,7 @@ sql-fix:
 sql-check:
 	poetry run sqlfluff lint .
 
-lint-all: black isort flake8 bandit
+lint-all: black isort flake8 bandit sql-fix
 
 requirements:
 	poetry export --without-hashes --without dev -f requirements.txt -o requirements.txt
