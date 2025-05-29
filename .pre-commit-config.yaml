@@ -31,8 +31,8 @@ repos:
     rev: 3.0.4
     hooks:
       - id: sqlfluff-lint
-        args: ["--dialect", "postgres"]
         files: \.sql$
+        args: ["--config", ".sqlfluff"]
 
   # - repo: local
   #   hooks:
