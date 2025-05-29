@@ -9,7 +9,6 @@ from src.utils.helper import run_server
 from src.utils.logger import logger
 from src.utils.prometheus_instrumentation import setup_prometheus_instrumentation
 from src.utils.tracing import setup_tracer
-from src.services.user import User
 
 logger.info("Starting up the FastAPI application")
 app = FastAPI()

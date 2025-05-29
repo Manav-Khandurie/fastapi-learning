@@ -362,6 +362,20 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "cognitive-complexity"
+version = "1.3.0"
+description = "Library to calculate Python functions cognitive complexity via code"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "cognitive_complexity-1.3.0.tar.gz", hash = "sha256:a0cfbd47dee0b19f4056f892389f501694b205c3af69fb703cc744541e03dde5"},
+]
+
+[package.dependencies]
+setuptools = "*"
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -682,6 +696,21 @@ files = [
 mccabe = ">=0.7.0,<0.8.0"
 pycodestyle = ">=2.13.0,<2.14.0"
 pyflakes = ">=3.3.0,<3.4.0"
+
+[[package]]
+name = "flake8-cognitive-complexity"
+version = "0.1.0"
+description = "An extension for flake8 that validates cognitive functions complexity"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "flake8_cognitive_complexity-0.1.0.tar.gz", hash = "sha256:f202df054e4f6ff182b659c261922b9c684628a47beb19cb0973c50d6a7831c1"},
+]
+
+[package.dependencies]
+cognitive_complexity = "*"
+setuptools = "*"
 
 [[package]]
 name = "googleapis-common-protos"
@@ -2370,7 +2399,7 @@ version = "80.7.1"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.9"
-groups = ["dev"]
+groups = ["main", "dev"]
 files = [
     {file = "setuptools-80.7.1-py3-none-any.whl", hash = "sha256:ca5cc1069b85dc23070a6628e6bcecb3292acac802399c7f8edc0100619f9009"},
     {file = "setuptools-80.7.1.tar.gz", hash = "sha256:f6ffc5f0142b1bd8d0ca94ee91b30c0ca862ffd50826da1ea85258a06fd94552"},
@@ -3149,4 +3178,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "4cbefc64151e5bcf5657d9bfe9f9b394595a714a56574ff49ac9965344439f7b"
+content-hash = "b84ebefb89781840f9b334ed63c78840967d7971b99b2a36c2d5a27954329548"
