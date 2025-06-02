@@ -4,13 +4,11 @@ jupytext:
     extension: .md
     format_name: myst
     format_version: 0.13
-    jupytext_version: 1.14.1
+    jupytext_version: 1.17.1
 kernelspec:
   display_name: Python 3
   language: python
   name: python3
-substitutions:
-  extra_dependencies: bokeh
 ---
 
 ```{code-cell} ipython3
@@ -46,7 +44,7 @@ def hello(name: str = "world\n"):
     'hello goodbye'
     """
 
-    return 'hello {}'.format(name)
+    return "hello {}".format(name)
 
 
 !ls

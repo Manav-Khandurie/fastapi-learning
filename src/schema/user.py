@@ -1,3 +1,4 @@
+# Databricks notebook source
 from typing import List, Optional
 
 from pydantic import BaseModel
@@ -6,7 +7,7 @@ from pydantic import BaseModel
 class UserAddRequest(BaseModel):
     id: int
     name: str
-    discription: Optional[str] = None
+    description: Optional[str] = None
 
 
 class UserFetchResponse(BaseModel):
