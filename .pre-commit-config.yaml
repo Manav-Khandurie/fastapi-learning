@@ -15,11 +15,11 @@ repos:
     hooks:
       - id: black
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.2.0
-    hooks:
-      - id: flake8
-        args: [--config=.flake8]
+  # - repo: https://github.com/pycqa/flake8
+  #   rev: 7.2.0
+  #   hooks:
+  #     - id: flake8
+  #       args: [--config=.flake8]
 
   - repo: https://github.com/PyCQA/bandit
     rev: '1.7.4'
@@ -33,6 +33,84 @@ repos:
       - id: sqlfluff-lint
         files: \.sql$
         args: ["--config", ".sqlfluff"]
+
+
+  
+  #for notebooks
+  - repo: https://github.com/PyCQA/isort
+    rev: 6.0.1
+    hooks:
+      - id: isort
+  - repo: https://github.com/PyCQA/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        files: ^nbqa/
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.15.0
+  #   hooks:
+  #     - id: mypy
+  #       additional_dependencies: [pydantic]
+
+  
+  - repo: https://github.com/MarcoGorelli/auto-walrus
+    rev: 0.3.4
+    hooks:
+      - id: auto-walrus
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        files: \.(py|rst|md)$
+  - repo: https://github.com/terrencepreilly/darglint
+    rev: v1.8.1
+    hooks:
+      - id: darglint
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: rst-backticks
+      - id: rst-directive-colons
+      - id: rst-inline-touching-normal
+  - repo: https://github.com/asottile/setup-cfg-fmt
+    rev: v2.8.0
+    hooks:
+      - id: setup-cfg-fmt
+  
+  - repo: meta
+    hooks:
+      # - id: check-hooks-apply
+      - id: check-useless-excludes
+  # - repo: https://github.com/kynan/nbstripout
+  #   rev: 0.8.1
+  #   hooks:
+  #     - id: nbstripout
+      #   exclude: ^notebooks/data/(databricks_notebook|notebook_for_testing)\.ipynb$
+
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.3.1
+    hooks:
+    - id: autoflake
+      args: ["--remove-all-unused-imports", "-i"]
+
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.9.1
+    hooks:
+     - id: nbqa-black
+       additional_dependencies: [black]  # optional, only if you're using Jupytext
+     - id: nbqa-pyupgrade
+       args: ["--py37-plus"]
+     - id: nbqa-isort
+       args: ["--float-to-top"]
+       additional_dependencies: [isort]
+     - id: nbqa-flake8
+       additional_dependencies: [flake8]
+    #  - id: nbqa-autoflake
+    #    additional_dependencies: [autoflake]
+    #    args: ["--remove-all-unused-imports"]
+
+
+
 
   # - repo: local
   #   hooks:
