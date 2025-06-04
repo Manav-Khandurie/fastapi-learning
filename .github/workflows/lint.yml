@@ -1,5 +1,0 @@
-name: Lint Notebooks
-on: [push, pull_request]
-
-jobs:
-  

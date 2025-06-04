@@ -122,8 +122,3 @@ jobs:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
 
-      # Get Web App URL
-      - name: Get Web App URL
-        run: |
-          url=$(az webapp show --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --query defaultHostName -o tsv)
-          echo "App URL: https://$url"
