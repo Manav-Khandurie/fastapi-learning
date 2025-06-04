@@ -58,7 +58,7 @@ jobs:
           pip install poetry poetry-plugin-export
           poetry export --without-hashes -f requirements.txt -o requirements.txt
           pip install -r requirements.txt
-          pip install bandit
+          pip install bandit pytest-cov
 
       - name: Run Bandit
         run: |
