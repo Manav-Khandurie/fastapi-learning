@@ -59,6 +59,11 @@ jobs:
             echo "ai-review.yaml already exists. Skipping injection."
           fi
           
+      - name: Debug container contents
+        run: |
+          ls -la 
+          tree
+
       - name: Run AI Code Review Agent
         uses: Manav-Khandurie/agents/code-review-agent@code-review-agent-v1.0.4 # Stable tested 1.0.3
         with:
