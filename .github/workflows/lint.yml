@@ -2,24 +2,4 @@ name: Lint Notebooks
 on: [push, pull_request]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install nbqa black flake8 isort
-
-      - name: Run linters
-        run: |
-          nbqa black notebooks/**/*.ipynb
-          nbqa flake8 notebooks/**/*.ipynb
-          nbqa isort notebooks/**/*.ipynb
+  

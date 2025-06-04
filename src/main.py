@@ -31,3 +31,4 @@ app.include_router(graphql_router, prefix="/graphql")
 if __name__ == "__main__":
     logger.info("Running server with `__main__`")
     run_server()
+# HELLO WORLD
