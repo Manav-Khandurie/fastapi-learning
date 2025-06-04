@@ -71,7 +71,7 @@ jobs:
 
       - name: cat ai-review file
         run: |
-          cat ai-review
+          cat ai-review.yaml
 
       - name: Run AI Code Review Agent
         uses: Manav-Khandurie/agents/code-review-agent@code-review-agent-v1.0.4 # Stable tested 1.0.3
