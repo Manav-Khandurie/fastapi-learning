@@ -50,11 +50,6 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Debug container contents
-        run: |
-          ls -la 
-          tree
-
       - name: Ensure ai-review.yaml exists
         run: |
           if [ ! -f ai-review.yaml ]; then
@@ -66,11 +61,9 @@ jobs:
             echo "ai-review.yaml already exists. Skipping injection."
           fi
 
-
       - name: Debug container contents
         run: |
           ls -la 
-          tree
 
       - name: cat ai-review file
         run: |
