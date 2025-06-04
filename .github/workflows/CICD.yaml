@@ -38,13 +38,12 @@ jobs:
           nbqa flake8 src/ tests/
           nbqa isort src/ tests/
           sqlfluff lint src/ tests/
-      
-    
-  sonarcloud:
+
+  tests:
     runs-on: ubuntu-latest
     needs: lint
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -58,11 +57,7 @@ jobs:
           pip install poetry poetry-plugin-export
           poetry export --without-hashes -f requirements.txt -o requirements.txt
           pip install -r requirements.txt
-          pip install bandit pytest-cov
-
-      - name: Run Bandit
-        run: |
-          bandit -r src/ -f json -o bandit.json
+          pip install pytest-cov
 
       - name: Add temp public/private key for tests
         run: |
@@ -71,6 +66,39 @@ jobs:
       - name: Run tests with coverage
         run: |
           pytest --cov=src --cov-report=xml --cov-report=term
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml    
+    
+  security:
+    runs-on: ubuntu-latest
+    needs: tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit
+
+      - name: Run Bandit
+        run: |
+          bandit -r src/ -f json -o bandit.json
+
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: .
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
