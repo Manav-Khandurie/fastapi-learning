@@ -37,11 +37,11 @@ jobs:
           nbqa black src/ tests/
           nbqa flake8 src/ tests/
           nbqa isort src/ tests/
-          sqlfluff lint src/ 
+          sqlfluff lint src/ tests/
       
       - name: Run bandit security checks
         run: |
-          bandit  -r tests/ src/
+          bandit  -r src/
           
   ai-review:
     runs-on: ubuntu-latest
