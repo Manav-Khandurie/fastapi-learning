@@ -58,11 +58,14 @@ jobs:
       - name: Ensure ai-review.yaml exists
         run: |
           if [ ! -f ai-review.yaml ]; then
-            echo "${{ secrets.AI_REVIEW_YAML }}" > ai-review.yaml
-            echo "Injected ai-review.yaml from secret."
+            cat <<EOF > ai-review.yaml
+          ${{ secrets.AI_REVIEW_YAML }}
+          EOF
+          echo "Injected ai-review.yaml from secret."
           else
             echo "ai-review.yaml already exists. Skipping injection."
           fi
+
 
       - name: Debug container contents
         run: |
