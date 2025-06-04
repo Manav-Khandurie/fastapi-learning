@@ -1,9 +1,9 @@
 repos:
-  - repo: https://github.com/Manav-Khandurie/auto-code-commenter
-    rev: pre-commit  # or 'latest' — use the actual branch you want them to use
-    hooks:
-      - id: auto-code-commenter
-        args: ["--src", "src", "--config", "ai-comment-config.yaml"]  # optional overrides
+  # - repo: https://github.com/Manav-Khandurie/auto-code-commenter
+  #   rev: pre-commit  # or 'latest' — use the actual branch you want them to use
+  #   hooks:
+  #     - id: auto-code-commenter
+  #       args: ["--src", "src", "--config", "ai-comment-config.yaml"]  # optional overrides
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -21,11 +21,11 @@ repos:
     hooks:
       - id: black
 
-  # - repo: https://github.com/pycqa/flake8
-  #   rev: 7.2.0
-  #   hooks:
-  #     - id: flake8
-  #       args: [--config=.flake8]
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.2.0
+    hooks:
+      - id: flake8
+        args: [--config=.flake8]
 
   - repo: https://github.com/PyCQA/bandit
     rev: '1.8.3'

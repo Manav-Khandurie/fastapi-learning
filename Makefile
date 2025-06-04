@@ -1,9 +1,12 @@
 # Makefile
 
-.PHONY: code-coverage server prod-server test unit-test integration-test black isort flake8 bandit sql-fix sql-check requirements jaeger-start
+.PHONY: code-coverage code-coverage-report server prod-server test unit-test integration-test black isort flake8 bandit sql-fix sql-check requirements jaeger-start
 
 code-coverage:
 	poetry run pytest --cov=src tests/
+
+code-coverage-report:
+	poetry run pytest --cov=src --cov-report=xml --cov-report=term
 
 server:
 	poetry run server

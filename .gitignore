@@ -178,3 +178,6 @@ cython_debug/
 
 # secret file
 .secrets
+
+# bandit 
+bandit.json
