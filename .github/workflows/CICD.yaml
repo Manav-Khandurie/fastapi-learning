@@ -225,9 +225,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Generate HTML Summary Table
+      - name: Generate CI/CD Summary Email
         id: generate_summary
         shell: bash
+        env:
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          BRANCH: ${{ github.ref_name }}
+          AUTHOR_NAME: ${{ github.event.head_commit.author.name }}
+          AUTHOR_EMAIL: ${{ github.event.head_commit.author.email }}
         run: |
           generate_row() {
             local stage="$1"
@@ -238,22 +246,10 @@ jobs:
             local emoji=""
 
             case "$status" in
-              success)
-                color="#d4edda"
-                emoji="✅"
-                ;;
-              failure)
-                color="#f8d7da"
-                emoji="❌"
-                ;;
-              cancelled)
-                color="#fff3cd"
-                emoji="⚠️"
-                ;;
-              *)
-                color="#ffffff"
-                emoji="❓"
-                ;;
+              success) color="#d4edda"; emoji="✅" ;;
+              failure) color="#f8d7da"; emoji="❌" ;;
+              cancelled) color="#fff3cd"; emoji="⚠️" ;;
+              *) color="#ffffff"; emoji="❓" ;;
             esac
 
             echo "<tr style='background-color:$color'>
@@ -263,9 +259,7 @@ jobs:
             </tr>" >> rows.html
           }
 
-          # Clean up
           > rows.html
-
           generate_row "🧹 Lint" "${{ needs.lint.result }}" "Black, Ruff, Flake8"
           generate_row "🧪 Tests" "${{ needs.tests.result }}" "Pytest + Coverage"
           generate_row "🛡️ Security" "${{ needs.security.result }}" "Bandit, Trivy, Sonar"
@@ -280,13 +274,12 @@ jobs:
 
             <h3>📄 Metadata</h3>
             <ul>
-              <li><strong>Repository:</strong> <a href="https://github.com/${{ github.repository }}">{{ github.repository }}</a></li>
-              <li><strong>Run ID:</strong> <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">{{ github.run_id }}</a></li>
-              <li><strong>Commit:</strong> <code>${{ github.sha }}</code></li>
-              <li><strong>Commit Message:</strong> ${{ github.event.head_commit.message }}</li>
-              <li><strong>Branch:</strong> ${{ github.ref_name }}</li>
-              <li><strong>Author:</strong> ${{ github.event.head_commit.author.name }} (${{
-                github.event.head_commit.author.email }})</li>
+              <li><strong>Repository:</strong> <a href="https://github.com/$REPO">$REPO</a></li>
+              <li><strong>Run ID:</strong> <a href="https://github.com/$REPO/actions/runs/$RUN_ID">$RUN_ID</a></li>
+              <li><strong>Commit:</strong> <code>$COMMIT_SHA</code></li>
+              <li><strong>Commit Message:</strong> $COMMIT_MESSAGE</li>
+              <li><strong>Branch:</strong> $BRANCH</li>
+              <li><strong>Author:</strong> $AUTHOR_NAME ($AUTHOR_EMAIL)</li>
             </ul>
 
             <h3>📊 Stage Results</h3>
@@ -305,7 +298,6 @@ jobs:
           </body>
           </html>
           EOF
-
 
       - name: Send SES Email
         env:
