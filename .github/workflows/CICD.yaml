@@ -226,39 +226,33 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Generate Pipeline Summary
-        id: summary
-        run: |
-          # Create the report file
-          echo "CI/CD Pipeline Summary Report" > summary.txt
-          echo "===============================" >> summary.txt
-          echo "" >> summary.txt
-          echo "Timestamp: $(date)" >> summary.txt
-          echo "" >> summary.txt
+      - name: Generate Summary Table
+        uses: actions/github-script@v7
+        id: status_summary
+        with:
+          script: |
+            const jobs = {
+              "Lint": "${{ needs.lint.result }}",
+              "Tests": "${{ needs.tests.result }}",
+              "Security": "${{ needs.security.result }}",
+              "AI Review": "${{ needs.ai-review.result }}",
+              "Build & Push": "${{ needs.build-secure-push.result }}",
+              "Deploy": "${{ needs.deploy-to-azure.result }}"
+            }
 
-          # Define header (fixed width for column alignment)
-          echo "Job Name               | Status   | Duration | Error Message" >> summary.txt
-          echo "-----------------------|----------|----------|-------------------------------" >> summary.txt
+            let md = "## 🧪 CI/CD Job Status Summary\n\n"
+            md += "| Step | Status |\n|------|--------|\n"
 
-          # Loop over the jobs and get their statuses
-          for job in lint tests security ai-review build-secure-push deploy-to-azure; do
-            job_status="${{ needs[$job].result }}"
-            job_duration="${{ needs[$job].duration }}"
+            for (const [job, status] of Object.entries(jobs)) {
+              const emoji = status === "success" ? "✅" : status === "failure" ? "❌" : "⚠️"
+              md += `| ${job} | ${emoji} ${status} |\n`
+            }
 
-            # Capture error message if the job failed
-            if [[ "$job_status" == "failure" ]]; then
-              error_message="${{ needs[$job].errorMessage }}"
-            else
-              error_message="N/A"
-            fi
+            core.setOutput("markdown_summary", md)
+            core.summary.addRaw(md).write()
 
-            # Print the result with fixed-width formatting
-            printf "%-22s | %-8s | %-8s | %-30s\n" "$job" "$job_status" "$job_duration" "$error_message" >> summary.txt
-          done
-
-          # Display the summary report
-          cat summary.txt
-
+      - name: Write Summary to File
+        run: echo "${{ steps.status_summary.outputs.markdown_summary }}" > summary.md
 
       - name: Send SES Email
         env:
