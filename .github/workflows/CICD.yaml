@@ -37,7 +37,7 @@ jobs:
           nbqa flake8 src/ tests/
           nbqa isort src/ tests/
           sqlfluff lint src/ tests/
-              
+          BANDIT 
   tests:
     runs-on: ubuntu-latest
     needs: lint
@@ -252,7 +252,7 @@ jobs:
                 ;;
               *)
                 color="#ffffff"
-                emoji="❔"
+                emoji="❓"
                 ;;
             esac
 
@@ -263,10 +263,9 @@ jobs:
             </tr>" >> rows.html
           }
 
-          # Start with a clean rows file
+          # Clean up
           > rows.html
 
-          # Generate rows using needs.X.result
           generate_row "🧹 Lint" "${{ needs.lint.result }}" "Black, Ruff, Flake8"
           generate_row "🧪 Tests" "${{ needs.tests.result }}" "Pytest + Coverage"
           generate_row "🛡️ Security" "${{ needs.security.result }}" "Bandit, Trivy, Sonar"
@@ -274,11 +273,23 @@ jobs:
           generate_row "🐳 Build & Push" "${{ needs.build-secure-push.result }}" "Docker Build + Secure Push"
           generate_row "☁️ Deploy" "${{ needs.deploy-to-azure.result }}" "Azure WebApp Deployment"
 
-          # Now build the full HTML file
           cat <<EOF > summary.html
           <html>
           <body style="font-family:Arial, sans-serif;">
-            <h2>🚀 CI/CD FASTAPI Pipeline Report</h2>
+            <h2>🚀 CI/CD Pipeline Report</h2>
+
+            <h3>📄 Metadata</h3>
+            <ul>
+              <li><strong>Repository:</strong> <a href="https://github.com/${{ github.repository }}">{{ github.repository }}</a></li>
+              <li><strong>Run ID:</strong> <a href="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}">{{ github.run_id }}</a></li>
+              <li><strong>Commit:</strong> <code>${{ github.sha }}</code></li>
+              <li><strong>Commit Message:</strong> ${{ github.event.head_commit.message }}</li>
+              <li><strong>Branch:</strong> ${{ github.ref_name }}</li>
+              <li><strong>Author:</strong> ${{ github.event.head_commit.author.name }} (${{
+                github.event.head_commit.author.email }})</li>
+            </ul>
+
+            <h3>📊 Stage Results</h3>
             <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
               <thead>
                 <tr style="background-color: #f0f0f0;">
@@ -294,6 +305,7 @@ jobs:
           </body>
           </html>
           EOF
+
 
       - name: Send SES Email
         env:
