@@ -229,15 +229,36 @@ jobs:
       - name: Generate Pipeline Summary
         id: summary
         run: |
-          echo "CI/CD Summary Report" > summary.txt
-          echo "====================" >> summary.txt
+          # Create the report file
+          echo "CI/CD Pipeline Summary Report" > summary.txt
+          echo "===============================" >> summary.txt
+          echo "" >> summary.txt
+          echo "Timestamp: $(date)" >> summary.txt
           echo "" >> summary.txt
 
+          # Define header (fixed width for column alignment)
+          echo "Job Name               | Status   | Duration | Error Message" >> summary.txt
+          echo "-----------------------|----------|----------|-------------------------------" >> summary.txt
+
+          # Loop over the jobs and get their statuses
           for job in lint tests security ai-review build-secure-push deploy-to-azure; do
-            echo "$job: ${{ needs[job].result }}" >> summary.txt
+            job_status="${{ needs[$job].result }}"
+            job_duration="${{ needs[$job].duration }}"
+
+            # Capture error message if the job failed
+            if [[ "$job_status" == "failure" ]]; then
+              error_message="${{ needs[$job].errorMessage }}"
+            else
+              error_message="N/A"
+            fi
+
+            # Print the result with fixed-width formatting
+            printf "%-22s | %-8s | %-8s | %-30s\n" "$job" "$job_status" "$job_duration" "$error_message" >> summary.txt
           done
 
+          # Display the summary report
           cat summary.txt
+
 
       - name: Send SES Email
         env:
