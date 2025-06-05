@@ -308,20 +308,29 @@ jobs:
           TO_JSON=$(printf '"%s",' "${ADDR[@]}")
           TO_JSON="[${TO_JSON%,}]"
 
-          HTML_BODY=$(cat summary.html)
+          # Escape summary.html into a JSON-safe format and write to json_body.json
+          HTML_CONTENT=$(cat summary.html | sed -e 's/"/\\"/g' | tr '\n' ' ')
 
-          aws ses send-email \
-            --from "$SES_FROM_EMAIL" \
-            --destination "{\"ToAddresses\": $TO_JSON}" \
-            --message "{
-              \"Subject\": {
-                \"Data\": \"CI/CD Pipeline Report\",
-                \"Charset\": \"utf-8\"
+          cat <<EOF > email_payload.json
+          {
+            "Source": "$SES_FROM_EMAIL",
+            "Destination": {
+              "ToAddresses": $TO_JSON
+            },
+            "Message": {
+              "Subject": {
+                "Data": "CI/CD Pipeline Report",
+                "Charset": "UTF-8"
               },
-              \"Body\": {
-                \"Html\": {
-                  \"Data\": \"$(echo "$HTML_BODY" | sed -e ':a' -e 'N' -e '$!ba' -e 's/"/\\"/g' -e 's/\n/ /g')\",
-                  \"Charset\": \"utf-8\"
+              "Body": {
+                "Html": {
+                  "Data": "$HTML_CONTENT",
+                  "Charset": "UTF-8"
                 }
               }
-            }"
+            }
+          }
+          EOF
+
+          aws ses send-email --cli-input-json file://email_payload.json
+
