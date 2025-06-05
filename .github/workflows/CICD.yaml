@@ -308,9 +308,20 @@ jobs:
           TO_JSON=$(printf '"%s",' "${ADDR[@]}")
           TO_JSON="[${TO_JSON%,}]"
 
-          HTML_BODY=$(jq -Rs . < summary.html)
+          HTML_BODY=$(cat summary.html)
 
           aws ses send-email \
             --from "$SES_FROM_EMAIL" \
             --destination "{\"ToAddresses\": $TO_JSON}" \
-            --message "{\"Subject\":{\"Data\":\"CI/CD Pipeline Report\",\"Charset\":\"utf-8\"},\"Body\":{\"Html\":{\"Data\":$HTML_BODY,\"Charset\":\"utf-8\"}}}"
+            --message "{
+              \"Subject\": {
+                \"Data\": \"CI/CD Pipeline Report\",
+                \"Charset\": \"utf-8\"
+              },
+              \"Body\": {
+                \"Html\": {
+                  \"Data\": \"$(echo "$HTML_BODY" | sed -e ':a' -e 'N' -e '$!ba' -e 's/"/\\"/g' -e 's/\n/ /g')\",
+                  \"Charset\": \"utf-8\"
+                }
+              }
+            }"
