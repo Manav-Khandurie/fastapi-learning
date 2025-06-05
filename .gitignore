@@ -181,3 +181,7 @@ cython_debug/
 
 # bandit 
 bandit.json
+
+
+aws
+awscliv2.zip
