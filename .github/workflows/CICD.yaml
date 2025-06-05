@@ -28,7 +28,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install nbqa black flake8 isort sqlfluff 
-      # intentaonal mistake
       - name: Run linters
         run: |
           black src/ tests/
@@ -38,7 +37,7 @@ jobs:
           nbqa flake8 src/ tests/
           nbqa isort src/ tests/
           sqlfluff lint src/ tests/
-          bandit -r src/       
+   
   tests:
     runs-on: ubuntu-latest
     needs: lint
@@ -259,16 +258,13 @@ jobs:
           SES_FROM_EMAIL: ${{ secrets.SES_FROM_EMAIL }}
           SES_TO_EMAILS: ${{ secrets.SES_TO_EMAILS }}
         run: |
-          # Convert comma-separated emails to JSON array format
-          IFS=',' read -ra ADDR <<< "$SES_TO_EMAILS"
-          TO_JSON=$(printf '"%s",' "${ADDR[@]}")
-          TO_JSON="[${TO_JSON%,}]"
+          TO_ADDRESSES=$(echo "$SES_TO_EMAILS" | sed 's/,/","/g' | sed 's/^/["/' | sed 's/$/"]/')
+          EMAIL_BODY=$(cat summary.md | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
 
-          # Escape markdown content for JSON
-          EMAIL_BODY=$(sed 's/"/\\"/g' summary.md | awk '{printf "%s\\n", $0}')
-
-          # Send email using AWS SES
           aws ses send-email \
             --from "$SES_FROM_EMAIL" \
-            --destination "{\"ToAddresses\": $TO_JSON}" \
-            --message "{\"Subject\":{\"Data\":\"CI/CD Pipeline Report\",\"Charset\":\"utf-8\"},\"Body\":{\"Text\":{\"Data\":\"$EMAIL_BODY\",\"Charset\":\"utf-8\"}}}"
+            --destination "{\"ToAddresses\": $TO_ADDRESSES}" \
+            --message "Subject={Data=CI/CD Pipeline Report,Charset=utf-8},Body={Text={Data=\"$EMAIL_BODY\",Charset=utf-8}}"
+
+
+
