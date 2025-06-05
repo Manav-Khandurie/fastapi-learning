@@ -225,64 +225,93 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Write test stage summary
+      - name: Generate CI/CD Summary Email
+        id: generate_summary
         run: |
-          echo '{"stage": "Tests", "status": "${{ job.status }}", "message": "12 passed, 1 failed"}' > stage-tests.json
+          cat <<EOF > summary.html
+          <html>
+          <body style="font-family:Arial, sans-serif;">
+            <h2>🚀 CI/CD Pipeline Report</h2>
+            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th>Stage</th>
+                  <th>Status</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                $(generate_row "🧹 Lint" "${{ needs.lint.result }}" "Black, Ruff, Flake8")
+                $(generate_row "🧪 Tests" "${{ needs.tests.result }}" "Pytest + Coverage")
+                $(generate_row "🛡️ Security" "${{ needs.security.result }}" "Bandit, Trivy, Sonar")
+                $(generate_row "🧠 AI Review" "${{ needs.ai-review.result }}" "LLM Code QA")
+                $(generate_row "🐳 Build & Push" "${{ needs.build-secure-push.result }}" "Docker Build + Secure Push")
+                $(generate_row "☁️ Deploy" "${{ needs.deploy-to-azure.result }}" "Azure WebApp Deployment")
+              </tbody>
+            </table>
+          </body>
+          </html>
+          EOF
 
-      - name: Generate Final CI/CD Report
-  if: always()
-  needs:
-    - lint
-    - tests
-    - security
-    - ai-review
-    - build-secure-push
-    - deploy-to-azure
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+        shell: bash
+        env:
+          LINT_RESULT: ${{ needs.lint.result }}
+          TESTS_RESULT: ${{ needs.tests.result }}
+          SECURITY_RESULT: ${{ needs.security.result }}
+          AI_REVIEW_RESULT: ${{ needs.ai-review.result }}
+          BUILD_PUSH_RESULT: ${{ needs.build-secure-push.result }}
+          DEPLOY_RESULT: ${{ needs.deploy-to-azure.result }}
 
-    - name: Download stage summaries
-      uses: actions/download-artifact@v4
-      with:
-        path: ./stage_summaries
+      - name: Define Row Generator Function
+        shell: bash
+        run: |
+          generate_row() {
+            local stage=$1
+            local status=$2
+            local message=$3
 
-    - name: Generate HTML Summary
-      run: |
-        # Start HTML
-        echo '<html><body><h2>🚀 CI/CD Pipeline Report</h2>' > summary.html
-        echo '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse;">' >> summary.html
-        echo '<tr><th>Stage</th><th>Status</th><th>Message</th></tr>' >> summary.html
+            local color=""
+            local emoji=""
 
-        for file in ./stage_summaries/*.json; do
-          STAGE=$(jq -r .stage $file)
-          STATUS=$(jq -r .status $file)
-          MSG=$(jq -r .message $file)
+            case "$status" in
+              success)
+                color="#d4edda"
+                emoji="✅"
+                ;;
+              failure)
+                color="#f8d7da"
+                emoji="❌"
+                ;;
+              cancelled)
+                color="#fff3cd"
+                emoji="⚠️"
+                ;;
+              *)
+                color="#ffffff"
+                emoji="❓"
+                ;;
+            esac
 
-          case "$STATUS" in
-            success) COLOR="green"; ICON="✅";;
-            failure) COLOR="red"; ICON="❌";;
-            cancelled) COLOR="orange"; ICON="⚠️";;
-            *) COLOR="gray"; ICON="❓";;
-          esac
+            echo "<tr style='background-color:$color'>
+              <td>$stage</td>
+              <td>$emoji $status</td>
+              <td>$message</td>
+            </tr>"
+          }
+          export -f generate_row
 
-          echo "<tr><td>$STAGE</td><td style='color:$COLOR'>$ICON $STATUS</td><td>$MSG</td></tr>" >> summary.html
-        done
+      - name: Send SES Email
+        env:
+          SES_FROM_EMAIL: ${{ secrets.SES_FROM_EMAIL }}
+          SES_TO_EMAILS: ${{ secrets.SES_TO_EMAILS }}
+        run: |
+          IFS=',' read -ra ADDR <<< "$SES_TO_EMAILS"
+          TO_JSON=$(printf '"%s",' "${ADDR[@]}")
+          TO_JSON="[${TO_JSON%,}]"
 
-        echo '</table></body></html>' >> summary.html
+          HTML_BODY=$(sed 's/"/\\"/g' summary.html | awk '{printf "%s\\n", $0}')
 
-    - name: Send SES Email
-      env:
-        SES_FROM_EMAIL: ${{ secrets.SES_FROM_EMAIL }}
-        SES_TO_EMAILS: ${{ secrets.SES_TO_EMAILS }}
-      run: |
-        IFS=',' read -ra ADDR <<< "$SES_TO_EMAILS"
-        TO_JSON=$(printf '"%s",' "${ADDR[@]}")
-        TO_JSON="[${TO_JSON%,}]"
-
-        EMAIL_BODY=$(sed 's/"/\\"/g' summary.html | awk '{printf "%s\\n", $0}')
-
-        aws ses send-email \
-          --from "$SES_FROM_EMAIL" \
-          --destination "{\"ToAddresses\": $TO_JSON}" \
-          --message "{\"Subject\":{\"Data\":\"CI/CD Pipeline Report\",\"Charset\":\"utf-8\"},\"Body\":{\"Html\":{\"Data\":\"$EMAIL_BODY\",\"Charset\":\"utf-8\"}}}"
+          aws ses send-email \
+            --from "$SES_FROM_EMAIL" \
+            --destination "{\"ToAddresses\": $TO_JSON}" \
+            --message "{\"Subject\":{\"Data\":\"CI/CD Pipeline Report\",\"Charset\":\"utf-8\"},\"Body\":{\"Html\":{\"Data\":\"$HTML_BODY\",\"Charset\":\"utf-8\"}}}"
