@@ -308,7 +308,8 @@ jobs:
           TO_JSON=$(printf '"%s",' "${ADDR[@]}")
           TO_JSON="[${TO_JSON%,}]"
 
-          HTML_BODY=$(sed 's/"/\\"/g' summary.html | awk '{printf "%s\\n", $0}')
+          # Read HTML content as one-liner using jq to escape correctly
+          HTML_BODY=$(jq -Rs . < summary.html)
 
           aws ses send-email \
             --from "$SES_FROM_EMAIL" \
