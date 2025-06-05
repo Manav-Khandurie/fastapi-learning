@@ -260,7 +260,7 @@ jobs:
           SES_TO_EMAILS: ${{ secrets.SES_TO_EMAILS }}
         run: |
           TO_ADDRESSES=$(echo "$SES_TO_EMAILS" | sed 's/,/","/g' | sed 's/^/["/' | sed 's/$/"]/')
-          EMAIL_BODY=$(cat summary.txt | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
+          EMAIL_BODY=$(cat summary.md | sed 's/"/\\"/g' | sed ':a;N;$!ba;s/\n/\\n/g')
 
           aws ses send-email \
             --from "$SES_FROM_EMAIL" \
