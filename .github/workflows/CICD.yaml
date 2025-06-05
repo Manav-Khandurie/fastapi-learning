@@ -225,50 +225,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Generate CI/CD Summary Email
+      - name: Generate HTML Summary Table
         id: generate_summary
-        run: |
-          cat <<EOF > summary.html
-          <html>
-          <body style="font-family:Arial, sans-serif;">
-            <h2>🚀 CI/CD Pipeline Report</h2>
-            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-              <thead>
-                <tr style="background-color: #f0f0f0;">
-                  <th>Stage</th>
-                  <th>Status</th>
-                  <th>Message</th>
-                </tr>
-              </thead>
-              <tbody>
-                $(generate_row "🧹 Lint" "${{ needs.lint.result }}" "Black, Ruff, Flake8")
-                $(generate_row "🧪 Tests" "${{ needs.tests.result }}" "Pytest + Coverage")
-                $(generate_row "🛡️ Security" "${{ needs.security.result }}" "Bandit, Trivy, Sonar")
-                $(generate_row "🧠 AI Review" "${{ needs.ai-review.result }}" "LLM Code QA")
-                $(generate_row "🐳 Build & Push" "${{ needs.build-secure-push.result }}" "Docker Build + Secure Push")
-                $(generate_row "☁️ Deploy" "${{ needs.deploy-to-azure.result }}" "Azure WebApp Deployment")
-              </tbody>
-            </table>
-          </body>
-          </html>
-          EOF
-
-        shell: bash
-        env:
-          LINT_RESULT: ${{ needs.lint.result }}
-          TESTS_RESULT: ${{ needs.tests.result }}
-          SECURITY_RESULT: ${{ needs.security.result }}
-          AI_REVIEW_RESULT: ${{ needs.ai-review.result }}
-          BUILD_PUSH_RESULT: ${{ needs.build-secure-push.result }}
-          DEPLOY_RESULT: ${{ needs.deploy-to-azure.result }}
-
-      - name: Define Row Generator Function
         shell: bash
         run: |
           generate_row() {
-            local stage=$1
-            local status=$2
-            local message=$3
+            local stage="$1"
+            local status="$2"
+            local message="$3"
 
             local color=""
             local emoji=""
@@ -296,9 +260,40 @@ jobs:
               <td>$stage</td>
               <td>$emoji $status</td>
               <td>$message</td>
-            </tr>"
+            </tr>" >> rows.html
           }
-          export -f generate_row
+
+          # Start with a clean rows file
+          > rows.html
+
+          # Generate rows using needs.X.result
+          generate_row "🧹 Lint" "${{ needs.lint.result }}" "Black, Ruff, Flake8"
+          generate_row "🧪 Tests" "${{ needs.tests.result }}" "Pytest + Coverage"
+          generate_row "🛡️ Security" "${{ needs.security.result }}" "Bandit, Trivy, Sonar"
+          generate_row "🧠 AI Review" "${{ needs.ai-review.result }}" "LLM Code QA"
+          generate_row "🐳 Build & Push" "${{ needs.build-secure-push.result }}" "Docker Build + Secure Push"
+          generate_row "☁️ Deploy" "${{ needs.deploy-to-azure.result }}" "Azure WebApp Deployment"
+
+          # Now build the full HTML file
+          cat <<EOF > summary.html
+          <html>
+          <body style="font-family:Arial, sans-serif;">
+            <h2>🚀 CI/CD FASTAPI Pipeline Report</h2>
+            <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+              <thead>
+                <tr style="background-color: #f0f0f0;">
+                  <th>Stage</th>
+                  <th>Status</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody>
+          $(cat rows.html)
+              </tbody>
+            </table>
+          </body>
+          </html>
+          EOF
 
       - name: Send SES Email
         env:
