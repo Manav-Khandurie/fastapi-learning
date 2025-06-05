@@ -252,7 +252,7 @@ jobs:
                 ;;
               *)
                 color="#ffffff"
-                emoji="❓"
+                emoji="❔"
                 ;;
             esac
 
