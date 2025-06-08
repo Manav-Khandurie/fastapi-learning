@@ -10,8 +10,19 @@ from src.utils.logger import logger
 
 @strawberry.type
 class Query:
+    """GraphQL query class for fetching user data."""
+    
     @strawberry.field
     def user(self, id: int, info) -> Optional[UserType]:
+        """Fetch a user by their ID.
+
+        Args:
+            id (int): The ID of the user to fetch.
+            info: The GraphQL context containing the database session.
+
+        Returns:
+            Optional[UserType]: The user object if found, otherwise None.
+        """
         logger.info(f"🔍 Fetching user with id={id}")
         db: Session = info.context.db
         user = UserService(db).get_user(id)
@@ -20,6 +31,14 @@ class Query:
 
     @strawberry.field
     def users(self, info) -> List[UserType]:
+        """Fetch all users.
+
+        Args:
+            info: The GraphQL context containing the database session.
+
+        Returns:
+            List[UserType]: A list of user objects.
+        """
         logger.info("🔍 Fetching all users")
         db: Session = info.context.db
         result = UserService(db).get_users()

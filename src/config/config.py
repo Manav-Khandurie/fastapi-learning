@@ -7,6 +7,9 @@ from src.utils.logger import logger
 
 
 class Settings(BaseSettings):
+    """
+    Configuration settings for the application, including database and JWT settings.
+    """
     database_url: str = "sqlite:///./data/test.db"
     public_key_path: str = "secrets/public.pem"
     private_key_path: str = "secrets/private.pem"
@@ -22,10 +25,16 @@ class Settings(BaseSettings):
 
     @property
     def private_key(self):
+        """
+        Reads and returns the private key from the specified path.
+        """
         return Path(self.private_key_path).read_text()
 
     @property
     def public_key(self):
+        """
+        Reads and returns the public key from the specified path.
+        """
         return Path(self.public_key_path).read_text()
 
     model_config = ConfigDict(env_file=".env", env_file_encoding="utf-8")
