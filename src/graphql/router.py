@@ -6,6 +6,7 @@ from src.utils.logger import logger
 
 logger.info("🚀 Initializing GraphQL router")
 
+# Create a GraphQL router with the specified schema and context getter
 router = GraphQLRouter(schema, context_getter=get_context, tags=["GRAPHQL Methods"])
 
 logger.info("✅ GraphQL router ready")

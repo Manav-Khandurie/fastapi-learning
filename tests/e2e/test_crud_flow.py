@@ -3,6 +3,21 @@ import pytest
 
 @pytest.mark.e2e
 def test_full_crud_flow(test_client):
+    """Test the full CRUD flow for user management API.
+
+    This test performs the following steps:
+    1. Health Check
+    2. Authenticate and Get Token
+    3. Read All Users (initial state)
+    4. Create a New User
+    5. Read the Created User
+    6. Update the Created User
+    7. Confirm Update
+    8. Delete the Created User
+    9. Delete All Users
+    10. Confirm No Users Exist
+    """
+    
     # Step 1: Health Check
     health_res = test_client.get("/api/v1/health")
     assert health_res.status_code == 200

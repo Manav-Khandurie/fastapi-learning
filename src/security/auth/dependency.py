@@ -7,6 +7,18 @@ from src.utils.logger import logger
 
 
 def get_current_user(authorization: Optional[str] = Header(None)):
+    """
+    Retrieve the current user based on the provided Authorization header.
+
+    Args:
+        authorization (Optional[str]): The Authorization header containing the Bearer token.
+
+    Raises:
+        HTTPException: If the Authorization header is missing or invalid, or if token verification fails.
+
+    Returns:
+        dict: The payload of the verified JWT token.
+    """
     logger.info("🔑 Authenticating user from Authorization header")
     if authorization is None or not authorization.startswith("Bearer "):
         logger.warning("⚠️ Missing or invalid Authorization header")

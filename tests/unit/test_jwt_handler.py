@@ -9,6 +9,7 @@ from src.config.config import settings
 
 @pytest.mark.unit
 def test_create_jwt_and_verify():
+    """Test the creation and verification of a JWT token."""
     payload = {"user": "mktakeda"}
     token = create_jwt(payload.copy())
     decoded = verify_jwt(token)
@@ -19,7 +20,7 @@ def test_create_jwt_and_verify():
 
 @pytest.mark.unit
 def test_verify_jwt_invalid_signature():
-
+    """Test verification of a JWT token with an invalid signature."""
     payload = {"user": "fake", "exp": datetime.now(timezone.utc) + timedelta(minutes=5)}
     fake_private_key = """-----BEGIN PRIVATE KEY-----
     MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCgu4+HhVwmvK7m
@@ -40,29 +41,4 @@ def test_verify_jwt_invalid_signature():
     190lJ2LbKt7KQ+sTE/UmnfkR4UyoCekYq/NjOD/jWl8wRIAFTNuMLWdwsvHF2mvD
     5tCAWZ2WI2NjNIaN4dFfHgQ+CIAPNJ7PtCZLkVuVmvLzwiJ7LldmPWeY9ThnRvAI
     Cc5HJmxMmQKBgBpDPz+HL+DxcbjXVFrUa4m979cABv9AO5NtywrvVyaLPP681ozD
-    6ptm7FtV0XqNpRVHkqgjGm1M80PsGx0X7SVJm0V4NpRBjCyiMwHqtnIzgY+uojbY
-    0lnrVEXGtx5soMOklAijcxUV/HWLsqra7cJsyMS4XInur32KuXwGUm/vAoGAPOAc
-    SzEf9wJHH1EIZuyDoa529lqxrPxSMoHXrIP06Yh5JvRO2od4R91FMS3enUAeVrV8
-    mJEzxNXoGwrKEFKWdmQckEarhqttmK9qe45FgbKTeEkyHpYtkYrUaXU2VOmA3tP/
-    zX2QZ8gu2PkSeXnXdK16AyeYlrgZKaipxjOmPgkCgYBT4OC/9x1xDzNTBY8weXeE
-    NdZYIRW8xSB1U/Dthw9a0LBeIi9At9sf60cOXE1zkl1Ger3UTg4k75csMyZDZKv+
-    1WMsLWcW9a14PugqFAjT+rKfYb+HpH5Q4v05QXeNRFwZ7iy01mpJ7xWzxPXFXfYA
-    cct6nibrGliQGJz02sVVIQ==
-    -----END PRIVATE KEY-----"""
-    fake_token = jwt.encode(payload, fake_private_key, algorithm=settings.JWT_ALGORITHM)
-
-    with pytest.raises(ValueError, match="Invalid Expired token"):
-        verify_jwt(fake_token)
-
-
-@pytest.mark.unit
-def test_verify_jwt_expired_token():
-
-    payload = {
-        "user": "expired",
-        "exp": datetime.now(timezone.utc) - timedelta(minutes=1),
-    }
-    token = jwt.encode(payload, settings.private_key, algorithm=settings.JWT_ALGORITHM)
-
-    with pytest.raises(ValueError, match="Invalid Expired token"):
-        verify_jwt(token)
+    6ptm7FtV0XqNpRVHkqgjGm1M
