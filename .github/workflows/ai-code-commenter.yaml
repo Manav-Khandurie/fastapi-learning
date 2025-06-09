@@ -22,11 +22,11 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-
+      
       - name: Run Code Comment Bot
-        uses: Manav-Khandurie/auto-code-commenter@v1.3.0
+        uses: Manav-Khandurie/auto-code-commenter@v1.4.0
         with:
-          src: "src"
+          src: "./tests ./src"
           provider: "openai"
           model_name: "gpt-4o-mini"
           api_key: ${{ secrets.OPENAI_API_KEY }} #changes here
