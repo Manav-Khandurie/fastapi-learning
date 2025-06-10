@@ -19,14 +19,18 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
 
-# Override FastAPI's get_db
 def override_get_db():
+    """Override the default database session for testing.
+
+    Yields a database session for use in tests, ensuring that
+    the session is properly closed and rolled back after use.
+    """
     db = TestingSessionLocal()
     try:
         yield db
     finally:
-        db.rollback()
-        db.close()
+        db.rollback()  # Rollback any changes made during the test
+        db.close()     # Close the database session
 
 
 # Apply override
@@ -35,6 +39,11 @@ app.dependency_overrides[get_db] = override_get_db
 
 @pytest.fixture(scope="module")
 def test_client():
+    """Fixture to create a test client for the FastAPI application.
+
+    This fixture sets up the database tables before tests run
+    and drops them after all tests in the module have completed.
+    """
     print("Creating tables...")
     Base.metadata.create_all(bind=engine)  # Make sure this is called
     with TestClient(app) as c:
@@ -45,8 +54,12 @@ def test_client():
 
 @pytest.fixture
 def auth_token(test_client):
+    """Fixture to obtain an authentication token for a test user.
 
+    This fixture makes a request to the token endpoint and
+    returns the access token for use in tests.
+    """
     response = test_client.get("/api/v1/token/testuser")
 
-    assert response.status_code == 200
-    return response.json()["access_token"]
+    assert response.status_code == 200  # Ensure the request was successful
+    return response.json()["access_token"]  # Return the access token from the response

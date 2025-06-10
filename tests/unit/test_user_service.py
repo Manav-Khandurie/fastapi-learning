@@ -10,6 +10,7 @@ from src.model.user import User
 
 @pytest.mark.unit
 def test_get_user_found():
+    """Test case for retrieving a user that exists in the database."""
     db = MagicMock()
     db.query().filter().first.return_value = User(id=1, name="Alice")
 
@@ -21,6 +22,7 @@ def test_get_user_found():
 
 @pytest.mark.unit
 def test_get_user_not_found():
+    """Test case for attempting to retrieve a user that does not exist."""
     db = MagicMock()
     db.query().filter().first.return_value = None
 
@@ -35,6 +37,7 @@ def test_get_user_not_found():
 
 @pytest.mark.unit
 def test_get_users():
+    """Test case for retrieving all users from the database."""
     db = MagicMock()
     db.query().all.return_value = [User(id=1, name="Alice"), User(id=2, name="Bob")]
 
@@ -51,6 +54,7 @@ def test_get_users():
 
 @pytest.mark.unit
 def test_add_user_success():
+    """Test case for successfully adding a new user."""
     db = MagicMock()
     db.query().filter().first.return_value = None
 
@@ -64,6 +68,7 @@ def test_add_user_success():
 
 @pytest.mark.unit
 def test_add_user_duplicate_id():
+    """Test case for attempting to add a user with a duplicate ID."""
     db = MagicMock()
     db.query().filter().first.return_value = User(id=1, name="Alice")
 
@@ -78,6 +83,7 @@ def test_add_user_duplicate_id():
 
 @pytest.mark.unit
 def test_update_user_success():
+    """Test case for successfully updating an existing user."""
     db = MagicMock()
     user = User(id=1, name="Alice")
     db.query().filter().first.return_value = user
@@ -92,6 +98,7 @@ def test_update_user_success():
 
 @pytest.mark.unit
 def test_update_user_not_found():
+    """Test case for attempting to update a user that does not exist."""
     db = MagicMock()
     db.query().filter().first.return_value = None
 
@@ -106,6 +113,7 @@ def test_update_user_not_found():
 
 @pytest.mark.unit
 def test_delete_user_success():
+    """Test case for successfully deleting an existing user."""
     db = MagicMock()
     user = User(id=1, name="Alice")
     db.query().filter().first.return_value = user
@@ -120,6 +128,7 @@ def test_delete_user_success():
 
 @pytest.mark.unit
 def test_delete_user_not_found():
+    """Test case for attempting to delete a user that does not exist."""
     db = MagicMock()
     db.query().filter().first.return_value = None
 
@@ -134,6 +143,7 @@ def test_delete_user_not_found():
 
 @pytest.mark.unit
 def test_delete_users():
+    """Test case for deleting all users from the database."""
     db = MagicMock()
 
     service = UserService(db)

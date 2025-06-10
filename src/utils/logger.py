@@ -27,15 +27,15 @@ logger.add(
     format="{time} | {level} | {name}:{function}:{line} - {message}",
 )
 
-
 # class InterceptHandler(logging.Handler):
+#     """Custom logging handler to intercept log records and forward them to loguru."""
 #     def emit(self, record):
+#         """Emit a log record."""
 #         level = (
 #             logger.level(record.levelname).name
 #             if record.levelname in logger._core.levels
 #             else record.levelno
 #         )
 #         logger.log(level, record.getMessage())
-
 
 # logging.basicConfig(handlers=[InterceptHandler()], level=logging.INFO)
