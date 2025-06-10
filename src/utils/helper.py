@@ -7,9 +7,9 @@ from src.utils.logger import logger
 def run_server() -> None:
     """Starts the Uvicorn server on port 8000.
 
-    This function initializes and runs the Uvicorn server, 
-    using the application defined in 'src.main:app'. It logs 
-    the server start and handles any exceptions that may occur 
+    This function initializes and runs the Uvicorn server,
+    using the application defined in 'src.main:app'. It logs
+    the server start and handles any exceptions that may occur
     during the startup process.
     """
     logger.info("🚀 Starting Uvicorn server on port 8000")

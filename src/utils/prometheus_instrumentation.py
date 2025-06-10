@@ -9,7 +9,7 @@ def setup_prometheus_instrumentation(app: FastAPI):
 
     Args:
         app (FastAPI): The FastAPI application to instrument with Prometheus.
-    
+
     Logs the setup process and any exceptions that occur during instrumentation.
     """
     logger.info("🔧 Setting up Prometheus instrumentation")

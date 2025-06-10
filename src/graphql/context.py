@@ -14,6 +14,7 @@ class Context(BaseContext):
     Attributes:
         db (Session): The database session used for GraphQL operations.
     """
+
     def __init__(self, db: Session):
         """
         Initializes the GraphQL context with a database session.

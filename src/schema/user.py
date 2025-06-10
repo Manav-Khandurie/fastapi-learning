@@ -13,6 +13,7 @@ class UserAddRequest(BaseModel):
         name (str): The name of the user.
         description (Optional[str]): An optional description of the user.
     """
+
     id: int
     name: str
     description: Optional[str] = None
@@ -27,6 +28,7 @@ class UserFetchResponse(BaseModel):
         name (str): The name of the user.
         msg (Optional[str]): An optional message related to the user.
     """
+
     id: int
     name: str
     msg: Optional[str] = None
@@ -39,6 +41,7 @@ class UserQueryResponse(BaseModel):
     Attributes:
         message (str): A message related to the user query.
     """
+
     message: str
 
 
@@ -49,10 +52,12 @@ class UserFetchAllResponse(BaseModel):
     Attributes:
         users (List[UserFetchResponse]): A list of user fetch responses.
     """
+
     users: List[UserFetchResponse]
 
     class Config:
         """
         Configuration for the UserFetchAllResponse model.
         """
+
         extra = "forbid"

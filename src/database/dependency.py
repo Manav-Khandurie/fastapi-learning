@@ -11,7 +11,7 @@ def get_db() -> Generator[Session, None, None]:
 
     This function initializes a new database session using the SessionLocal
     factory and ensures that the session is properly closed after use.
-    
+
     Yields:
         Generator[Session, None, None]: A generator that yields a database session.
     """

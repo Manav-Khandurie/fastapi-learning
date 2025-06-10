@@ -30,7 +30,7 @@ def override_get_db():
         yield db
     finally:
         db.rollback()  # Rollback any changes made during the test
-        db.close()     # Close the database session
+        db.close()  # Close the database session
 
 
 # Apply override

@@ -10,6 +10,7 @@ class User(Base):
         id (int): The unique identifier for the user.
         name (str): The name of the user.
     """
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)

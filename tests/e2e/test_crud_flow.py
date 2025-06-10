@@ -17,7 +17,7 @@ def test_full_crud_flow(test_client):
     9. Delete All Users
     10. Confirm No Users Exist
     """
-    
+
     # Step 1: Health Check
     health_res = test_client.get("/api/v1/health")
     assert health_res.status_code == 200

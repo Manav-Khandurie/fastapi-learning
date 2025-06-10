@@ -11,7 +11,7 @@ from src.utils.logger import logger
 @strawberry.type
 class Query:
     """GraphQL Query class to fetch user data."""
-    
+
     @strawberry.field
     def user(self, id: int, info) -> Optional[UserType]:
         """Fetch a user by their ID.

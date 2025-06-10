@@ -8,7 +8,7 @@ from src.utils.logger import logger
 @strawberry.type
 class Mutation:
     """GraphQL mutations for user management."""
-    
+
     @strawberry.mutation
     def add_user(self, id: int, name: str, info) -> str:
         """Add a new user with the given id and name.
