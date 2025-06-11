@@ -136,7 +136,7 @@ jobs:
           config-path: "ai-review.yaml"
           score-threshold: 85
         env:
-          OPEN_API_KEY: ${{ secrets.OPEN_API_KEY }}
+          OPEN_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Upload code_review_result.json report
         uses: actions/upload-artifact@v4
