@@ -1,8 +1,7 @@
 name: 🤖 AI Code Comment Bot
 on:
-  schedule:
-    - cron: "0 1 * * *"  
   workflow_dispatch:
+  push:
 
 jobs:
   auto-comment:
