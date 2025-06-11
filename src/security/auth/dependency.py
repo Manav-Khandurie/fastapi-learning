@@ -26,9 +26,9 @@ def get_current_user(authorization: Optional[str] = Header(None)):
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Missing or invalid token"
         )
 
-    token = authorization.split(" ")[1]
+    token = authorization.split(" ")[1]  # Extract the token from the Authorization header
     try:
-        payload = verify_jwt(token)
+        payload = verify_jwt(token)  # Verify the JWT token
         logger.success("✅ Token verified successfully")
         return payload
     except ValueError:

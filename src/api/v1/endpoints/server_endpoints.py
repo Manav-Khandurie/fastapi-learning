@@ -26,7 +26,7 @@ def get_env() -> dict:
         dict: A dictionary containing the current environment variables.
     """
     logger.info("Environment variables requested")
-    env_vars = dict(os.environ)
+    env_vars = dict(os.environ)  # Convert environment variables to a dictionary
     return env_vars
 
 

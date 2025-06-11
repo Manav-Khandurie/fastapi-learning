@@ -22,8 +22,8 @@ class Mutation:
             str: A message indicating the result of the operation.
         """
         logger.info(f"➕ Adding user with id={id} and name={name}")
-        db: Session = info.context.db
-        result = UserService(db).add_user(id, name)["message"]
+        db: Session = info.context.db  # Retrieve the database session from the context
+        result = UserService(db).add_user(id, name)["message"]  # Call the service to add the user
         logger.success(f"✅ User added: id={id}")
         return result
 
@@ -40,8 +40,8 @@ class Mutation:
             str: A message indicating the result of the operation.
         """
         logger.info(f"✏️ Updating user id={id} to name={name}")
-        db: Session = info.context.db
-        result = UserService(db).update_user(id, name)["message"]
+        db: Session = info.context.db  # Retrieve the database session from the context
+        result = UserService(db).update_user(id, name)["message"]  # Call the service to update the user
         logger.success(f"✅ User updated: id={id}")
         return result
 
@@ -57,8 +57,8 @@ class Mutation:
             str: A message indicating the result of the operation.
         """
         logger.info(f"🗑️ Deleting user id={id}")
-        db: Session = info.context.db
-        result = UserService(db).delete_user(id)["message"]
+        db: Session = info.context.db  # Retrieve the database session from the context
+        result = UserService(db).delete_user(id)["message"]  # Call the service to delete the user
         logger.success(f"✅ User deleted: id={id}")
         return result
 
@@ -73,7 +73,7 @@ class Mutation:
             str: A message indicating the result of the operation.
         """
         logger.info("🗑️ Deleting all users")
-        db: Session = info.context.db
-        result = UserService(db).delete_users()["message"]
+        db: Session = info.context.db  # Retrieve the database session from the context
+        result = UserService(db).delete_users()["message"]  # Call the service to delete all users
         logger.success("✅ All users deleted")
         return result

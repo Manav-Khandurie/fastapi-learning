@@ -24,10 +24,10 @@ class Query:
             Optional[UserType]: The user object if found, otherwise None.
         """
         logger.info(f"🔍 Fetching user with id={id}")
-        db: Session = info.context.db
-        user = UserService(db).get_user(id)
+        db: Session = info.context.db  # Retrieve the database session from the context
+        user = UserService(db).get_user(id)  # Fetch the user from the UserService
         logger.success(f"✅ Found user id={id}")
-        return UserType(id=user["id"], name=user["name"])
+        return UserType(id=user["id"], name=user["name"])  # Return the user as a UserType object
 
     @strawberry.field
     def users(self, info) -> List[UserType]:
@@ -40,7 +40,7 @@ class Query:
             List[UserType]: A list of user objects.
         """
         logger.info("🔍 Fetching all users")
-        db: Session = info.context.db
-        result = UserService(db).get_users()
+        db: Session = info.context.db  # Retrieve the database session from the context
+        result = UserService(db).get_users()  # Fetch all users from the UserService
         logger.success(f"✅ Found {len(result['users'])} users")
-        return [UserType(id=u["id"], name=u["name"]) for u in result["users"]]
+        return [UserType(id=u["id"], name=u["name"]) for u in result["users"]]  # Return a list of UserType objects
