@@ -129,6 +129,13 @@ jobs:
           else
             echo "ai-review.yaml already exists. Skipping injection."
           fi
+      - name: Run AI Code Comment Review Agent
+        uses: Manav-Khandurie/agents/code-comment-review-agent@code-comment-review-agent-v1.0.0
+        with:
+          config-path: "./ai-comment-review.yaml"
+          score-threshold: 85
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
 
       - name: Run AI Code Review Agent
         uses: Manav-Khandurie/agents/code-review-agent@code-review-agent-v1.1.0 # Stable tested V1.1.0
@@ -143,6 +150,13 @@ jobs:
         with:
           name: code-review-report
           path: code_review_result.json
+      
+      - name: Upload AI comment review result
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-comment-review-report
+          path: code_comment_review_result.json
   
   build-secure-push:
     runs-on: ubuntu-latest
