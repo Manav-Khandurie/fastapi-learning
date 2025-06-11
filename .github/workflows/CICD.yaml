@@ -215,7 +215,7 @@ jobs:
 
   deploy-to-azure-prod:
     runs-on: ubuntu-latest
-    needs: deploy-to-azure-uat
+    needs: manual-approval
 
     steps:
       - name: Checkout repository
