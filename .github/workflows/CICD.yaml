@@ -8,6 +8,7 @@ on:
 
 env:
   AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}
+  AZURE_PROD_WEBAPP_NAME: ${{ secrets.AZURE_PROD_WEBAPP_NAME }}
   AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
   DOCKER_IMAGE: ${{ secrets.DOCKER_REPO }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -22,12 +23,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install nbqa black flake8 isort sqlfluff 
+          pip install nbqa black flake8 isort sqlfluff
       - name: Run linters
         run: |
           black src/ tests/
@@ -37,7 +38,7 @@ jobs:
           nbqa flake8 src/ tests/
           nbqa isort src/ tests/
           sqlfluff lint src/ tests/
-          
+
   tests:
     runs-on: ubuntu-latest
     needs: lint
@@ -48,7 +49,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
@@ -67,8 +68,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: coverage.xml    
-    
+          path: coverage.xml
+
   security:
     runs-on: ubuntu-latest
     needs: tests
@@ -79,7 +80,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.12'
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
@@ -105,8 +106,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: bandit-report
-          path: bandit.json   
-        
+          path: bandit.json
+
   ai-review:
     runs-on: ubuntu-latest
     needs: security
@@ -131,13 +132,13 @@ jobs:
           score-threshold: 85
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-      
+
       - name: Upload code_review_result.json report
         uses: actions/upload-artifact@v4
         with:
           name: code-review-report
           path: code_review_result.json
-  
+
   build-secure-push:
     runs-on: ubuntu-latest
     needs: ai-review
@@ -166,24 +167,24 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@0.28.0
         with:
-          image-ref: '${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          image-ref: "${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}"
+          format: "sarif"
+          output: "trivy-results.sarif"
         env:
-          TRIVY_IMAGE: 'docker://${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}'
+          TRIVY_IMAGE: "docker://${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}"
 
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-results.sarif'
-          
+          sarif_file: "trivy-results.sarif"
+
       - name: Push Docker image to DockerHub
         run: |
           docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:${{ steps.version.outputs.version }}
           docker push ${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE }}:latest
-  deploy-to-azure:
+  deploy-to-azure-uat:
     runs-on: ubuntu-latest
-    needs: build-secure-push  
+    needs: build-secure-push
 
     steps:
       - name: Checkout repository
@@ -197,16 +198,55 @@ jobs:
       - name: Check Azure CLI version
         run: az --version
 
-      - name: Deploy Docker image from DockerHub to Azure Web App
+      - name: Deploy Docker image from DockerHub to Azure Web App (UAT)
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           images: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
-  
+  manual-approval:
+    runs-on: ubuntu-latest
+    needs: deploy-to-azure-uat
+    environment:
+      name: prod # 👈 Set this in GitHub repo settings with required reviewers
+      url: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Wait for manual approval
+        run: echo "✅ Approved manually via environment reviewers"
+
+  deploy-to-azure-prod:
+    runs-on: ubuntu-latest
+    needs: deploy-to-azure-uat
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Check Azure CLI version
+        run: az --version
+
+      - name: Deploy Docker image from DockerHub to Azure Web App (PROD)
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_PROD_WEBAPP_NAME }}
+          images: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:latest
   notify:
     runs-on: ubuntu-latest
     if: always()
-    needs: [lint, tests, security, ai-review, build-secure-push, deploy-to-azure]
+    needs:
+      [
+        lint,
+        tests,
+        security,
+        ai-review,
+        build-secure-push,
+        deploy-to-azure-uat,
+        deploy-to-azure-prod,
+      ]
 
     steps:
       - name: Checkout repository
@@ -255,7 +295,8 @@ jobs:
           generate_row "🛡️ Security" "${{ needs.security.result }}" "Bandit, Trivy, Sonar"
           generate_row "🧠 AI Review" "${{ needs.ai-review.result }}" "LLM Code QA"
           generate_row "🐳 Build & Push" "${{ needs.build-secure-push.result }}" "Docker Build + Secure Push"
-          generate_row "☁️ Deploy" "${{ needs.deploy-to-azure.result }}" "Azure WebApp Deployment"
+          generate_row "☁️ Deploy to UAT" "${{ needs.deploy-to-azure-uat.result }}" "Azure WebApp Deployment - UAT"
+          generate_row "👥 Deploy to PROD" "${{ needs.deploy-to-azure-prod.result }}" "Azure WebApp Deployment - PROD"
           cat <<EOF > summary.html
           <html>
           <body style="font-family:Arial, sans-serif;">
