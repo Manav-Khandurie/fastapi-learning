@@ -1,5 +1,3 @@
-import os
-
 from fastapi import APIRouter
 
 from src.utils.logger import logger
@@ -18,16 +16,16 @@ def get_health() -> dict:
     return {"message": "Healthy"}
 
 
-@router.get("/env")
-def get_env() -> dict:
-    """Endpoint to retrieve environment variables.
+# @router.get("/env")
+# def get_env() -> dict:
+#     """Endpoint to retrieve environment variables.
 
-    Returns:
-        dict: A dictionary containing the current environment variables.
-    """
-    logger.info("Environment variables requested")
-    env_vars = dict(os.environ)
-    return env_vars
+#     Returns:
+#         dict: A dictionary containing the current environment variables.
+#     """
+#     logger.info("Environment variables requested")
+#     env_vars = dict(os.environ)
+#     return env_vars
 
 
 @router.get("/{full_path:path}")
