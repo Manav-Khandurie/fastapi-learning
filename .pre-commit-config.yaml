@@ -100,12 +100,16 @@ repos:
     hooks:
      - id: nbqa-black
        additional_dependencies: [black]  # optional, only if you're using Jupytext
+       exclude: ^notebooks/backup/
      - id: nbqa-pyupgrade
        args: ["--py37-plus"]
+       exclude: ^notebooks/backup/
      - id: nbqa-isort
        args: ["--float-to-top"]
+       exclude: ^notebooks/backup/
        additional_dependencies: [isort]
      - id: nbqa-flake8
+       exclude: ^notebooks/backup/
        additional_dependencies: [flake8]
     #  - id: nbqa-autoflake
     #    additional_dependencies: [autoflake]

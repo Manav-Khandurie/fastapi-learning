@@ -1,6 +1,6 @@
 # Makefile
 
-.PHONY: code-coverage code-coverage-report server prod-server test unit-test integration-test black isort flake8 bandit sql-fix sql-check requirements jaeger-start
+.PHONY: code-coverage code-coverage-report server prod-server test unit-test integration-test black isort flake8 bandit sql-fix sql-check sql-fix-all requirements jaeger-start nbqa-lint-test nbqa-lint-all 
 
 code-coverage:
 	poetry run pytest --cov=src tests/
@@ -38,10 +38,23 @@ bandit:
 sql-fix:
 	poetry run sqlfluff fix .
 
+sql-fix-all:
+	poetry run sqlfluff fix src/ tests/
+
 sql-check:
 	poetry run sqlfluff lint .
 
-lint-all: black isort flake8 bandit sql-fix
+nbqa-lint-test:
+	poetry run nbqa black notebooks/ETL.ipynb
+	poetry run nbqa isort notebooks/ETL.ipynb
+	poetry run nbqa flake8 notebooks/ETL.ipynb
+
+nbqa-lint-all:
+	poetry run nbqa black src/ tests/
+	poetry run nbqa isort src/ tests/
+	poetry run nbqa flake8 src/ tests/
+
+lint-all: black isort flake8 bandit sql-fix-all nbqa-lint-all
 
 requirements:
 	poetry export --without-hashes --without dev -f requirements.txt -o requirements.txt
