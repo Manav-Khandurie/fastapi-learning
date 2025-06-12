@@ -17,6 +17,6 @@ def get_jwt_token(user: str) -> dict:
     Returns:
         dict: A dictionary containing the access token and its type.
     """
-    token = create_jwt({user: user})
+    token = create_jwt({user: user})  # Create a JWT token using the provided username
     logger.info(f"JWT token generated for user: {user}")  # log token generation
-    return {"access_token": token, "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer"}  # Return the token and its type

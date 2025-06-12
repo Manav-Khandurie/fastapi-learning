@@ -11,7 +11,7 @@ class User(Base):
         name (str): The name of the user.
     """
 
-    __tablename__ = "users"
+    __tablename__ = "users"  # Name of the table in the database
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
+    id = Column(Integer, primary_key=True, index=True)  # Unique identifier for the user
+    name = Column(String, nullable=False)  # Name of the user, cannot be null
