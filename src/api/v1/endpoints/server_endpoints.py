@@ -30,6 +30,9 @@ def get_env() -> dict:
     return env_vars
 
 
+# /env
+
+
 @router.get("/{full_path:path}")
 def get_default_msg(full_path: str) -> dict:
     """Default endpoint that returns a message for any unmatched path.
