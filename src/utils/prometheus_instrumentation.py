@@ -14,7 +14,7 @@ def setup_prometheus_instrumentation(app: FastAPI):
     """
     logger.info("🔧 Setting up Prometheus instrumentation")
     try:
-        Instrumentator().instrument(app).expose(app)
+        Instrumentator().instrument(app).expose(app)  # Instrument the app and expose metrics
         logger.success("✅ Prometheus metrics exposed at /metrics")
     except Exception as e:
-        logger.exception(f"❌ Failed to set up Prometheus instrumentation: {e}")
+        logger.exception(f"❌ Failed to set up Prometheus instrumentation: {e}")  # Log any exceptions that occur during setup

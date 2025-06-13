@@ -16,9 +16,9 @@ def get_db() -> Generator[Session, None, None]:
         Generator[Session, None, None]: A generator that yields a database session.
     """
     logger.info("🔗 Creating new DB session")
-    db = SessionLocal()
+    db = SessionLocal()  # Create a new database session
     try:
-        yield db
+        yield db  # Yield the database session for use
     finally:
         db.close()  # Ensure the database session is closed
-        logger.info("🔒 DB session closed")
+        logger.info("🔒 DB session closed")  # Log that the session has been closed

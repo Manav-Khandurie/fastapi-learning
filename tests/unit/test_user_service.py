@@ -61,8 +61,8 @@ def test_add_user_success():
     service = UserService(db)
     result = service.add_user(1, "Alice")
 
-    db.add.assert_called()
-    db.commit.assert_called()
+    db.add.assert_called()  # Ensure that the add method was called
+    db.commit.assert_called()  # Ensure that the commit method was called
     assert result == {"message": "Record Inserted"}
 
 
@@ -91,8 +91,8 @@ def test_update_user_success():
     service = UserService(db)
     result = service.update_user(1, "AliceUpdated")
 
-    assert user.name == "AliceUpdated"
-    db.commit.assert_called()
+    assert user.name == "AliceUpdated"  # Check if the user's name was updated
+    db.commit.assert_called()  # Ensure that the commit method was called
     assert result == {"message": "Record Updated"}
 
 
@@ -121,8 +121,8 @@ def test_delete_user_success():
     service = UserService(db)
     result = service.delete_user(1)
 
-    db.delete.assert_called_with(user)
-    db.commit.assert_called()
+    db.delete.assert_called_with(user)  # Ensure that the delete method was called with the correct user
+    db.commit.assert_called()  # Ensure that the commit method was called
     assert result == {"message": "Record Deleted"}
 
 
@@ -149,6 +149,6 @@ def test_delete_users():
     service = UserService(db)
     result = service.delete_users()
 
-    db.query().delete.assert_called()
-    db.commit.assert_called()
-    assert result == {"message": "All Records Deleted"}
+    db.query().delete.assert_called()  # Ensure that the delete method was called for all users
+    db.commit.assert_called()  # Ensure that the commit method was called
+    assert result

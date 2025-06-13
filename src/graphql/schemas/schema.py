@@ -7,6 +7,6 @@ from src.utils.logger import logger
 logger.info("🧩 Combining Query and Mutation into GraphQL schema")
 
 # Create a GraphQL schema by combining the Query and Mutation resolvers
-schema = strawberry.Schema(query=Query, mutation=Mutation)
+schema = strawberry.Schema(query=Query, mutation=Mutation)  # Initialize the schema with Query and Mutation resolvers
 
 logger.info("✅ GraphQL schema created successfully")
