@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run AI Comment Review Agent
-        uses: Manav-Khandurie/agents/code-comment-review-agent@code-comment-review-agent-v1.0.0
+        uses: Manav-Khandurie/agents/code-comment-review-agent@main
         with:
           config-path: "./ai-comment-review.yaml"
           score-threshold: 85
