@@ -146,6 +146,12 @@ jobs:
         with:
           name: code-review-report
           path: code_review_result.json
+      
+      - name: Upload code_comment_review_result.json report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-comment-review-report
+          path: code_comment_review_result.json
 
   build-secure-push:
     runs-on: ubuntu-latest
