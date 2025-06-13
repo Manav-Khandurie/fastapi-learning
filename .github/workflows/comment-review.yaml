@@ -1,0 +1,26 @@
+name: AI comment review workflow
+
+on: [workflow_dispatch]
+
+jobs:
+  comment-review:
+    runs-on: ubuntu-latest
+    outputs:
+      review-report: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run AI Comment Review Agent
+        uses: Manav-Khandurie/agents/code-comment-review-agent@code-comment-review-agent-v1.0.0
+        with:
+          config-path: "./ai-comment-review.yaml"
+          score-threshold: 85
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+      - name: Upload AI comment review
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-comment-review-report
+          path: code_comment_review_result.json
