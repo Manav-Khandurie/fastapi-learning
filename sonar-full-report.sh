@@ -3,7 +3,7 @@
 # source .env
 
 # Variables
-SONAR_TOKEN="5222f0897507a4c5cbb8347a0b6054d98b49ee63"
+SONAR_TOKEN="5zxxxxxxxxxxxxxxxx"
 PROJECT_KEY="Manav-Khandurie_fastapi-learning"
 SONAR_API="https://sonarcloud.io/api"
 REPORT_DIR="sonar-report"
