@@ -86,9 +86,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install bandit
+
       - name: Run Bandit
         run: |
           bandit -r src/ -f json -o bandit.json
+
       - name: Download coverage report
         uses: actions/download-artifact@v4
         with:
@@ -102,11 +104,57 @@ jobs:
           SONAR_PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
           SONAR_ORGANIZATION: ${{ secrets.SONAR_ORGANIZATION }}
 
-      - name: Upload bandit report
+      - name: Generate Sonar Scan report
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          PROJECT_KEY: ${{ secrets.SONAR_PROJECT_KEY }}
+        run: |
+          # Set up variables
+          SONAR_API="https://sonarcloud.io/api"
+
+          # Ensure jq is available
+          sudo apt-get update && sudo apt-get install -y jq
+
+          # Fetch issues
+          curl -s -u "${SONAR_TOKEN}:" \
+              "${SONAR_API}/issues/search?componentKeys=${PROJECT_KEY}&ps=500" \
+              -o "issues.json"
+
+          # Fetch quality gate status
+          curl -s -u "${SONAR_TOKEN}:" \
+              "${SONAR_API}/qualitygates/project_status?projectKey=${PROJECT_KEY}" \
+              -o "quality_gate.json"
+
+          # Fetch key metrics
+          curl -s -u "${SONAR_TOKEN}:" \
+              "${SONAR_API}/measures/component?component=${PROJECT_KEY}&metricKeys=coverage,line_coverage,duplicated_lines_density,ncloc,complexity" \
+              -o "measures.json"
+
+          # Merge all into a single report
+          jq -s '{
+            timestamp: now,
+            issues: .[0].issues,
+            quality_gate: .[1].projectStatus,
+            metrics: .[2].component.measures
+          }' "issues.json" "quality_gate.json" "measures.json" > "sonar.json"
+
+      - name: Upload sonar.json report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-json-report
+          path: sonar.json
+      
+      - name: Upload Bandit report
         uses: actions/upload-artifact@v4
         with:
           name: bandit-report
           path: bandit.json
+
+      - name: Upload Sonar report
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonar-report
+          path: sonar-report/full-sonar-report.json
 
   ai-review:
     runs-on: ubuntu-latest
