@@ -3,7 +3,7 @@
 # source .env
 
 # Variables
-SONAR_TOKEN="5zxxxxxxxxxxxxxxxx"
+SONAR_TOKEN="5zxxxxxxxxxxxxxxxx" #USE NEW TOKEN NOW
 PROJECT_KEY="Manav-Khandurie_fastapi-learning"
 SONAR_API="https://sonarcloud.io/api"
 REPORT_DIR="sonar-report"
