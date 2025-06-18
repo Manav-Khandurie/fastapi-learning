@@ -150,11 +150,6 @@ jobs:
           name: bandit-report
           path: bandit.json
 
-      - name: Upload Sonar report
-        uses: actions/upload-artifact@v4
-        with:
-          name: sonar-report
-          path: sonar-report/full-sonar-report.json
 
   ai-review:
     runs-on: ubuntu-latest
@@ -319,13 +314,21 @@ jobs:
           name: code-review-report
           path: data/
       
+      - name: Download sonar review artifact
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: sonar-json-report
+          path: data/
+      
       - name: Run Issue Agent
-        uses: Manav-Khandurie/agents/issue-agent@issue-agent-v1.0.0
+        uses: Manav-Khandurie/agents/issue-agent@issue-agent-v1.1.0
         with:
           src: "./data"
-          provider: "openai"
-          model_name: "gpt-4o-mini"
-          api_key: ${{ secrets.OPENAI_API_KEY }}
+          provider: "deepseek"
+          model_name: "deepseek-chat"
+          api_key: ${{ secrets.DEEPSEEK_API_KEY }}
+          api_base: "https://api.deepseek.com/v1"
           github_token: ${{ secrets.TOKEN_GITHUB }}
           github_repo: ${{ github.repository }}
   
