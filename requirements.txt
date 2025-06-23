@@ -89,7 +89,7 @@ strawberry-graphql==0.270.0 ; python_version >= "3.12" and python_version < "4.0
 tblib==3.1.0 ; python_version >= "3.12" and python_version < "4.0"
 thrift==0.21.0 ; python_version >= "3.12" and python_version < "4.0"
 tqdm==4.67.1 ; python_version >= "3.12" and python_version < "4.0"
-typer==0.15.3 ; python_version >= "3.12" and python_version < "4.0"
+typer==0.16.0 ; python_version >= "3.12" and python_version < "4.0"
 typing-extensions==4.13.2 ; python_version >= "3.12" and python_version < "4.0"
 typing-inspection==0.4.0 ; python_version >= "3.12" and python_version < "4.0"
 ujson==5.10.0 ; python_version >= "3.12" and python_version < "4.0"
