@@ -297,6 +297,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-to-azure-prod
     steps:
+      - uses: actions/checkout@v3
+        with:
+          path: codebase
+
       - name: Create /data directory
         run: mkdir -p data
 
@@ -322,14 +326,13 @@ jobs:
           path: data/
       
       - name: Run Issue Agent
-        uses: Manav-Khandurie/agents/issue-agent@issue-agent-v1.1.0
+        uses: Manav-Khandurie/agents/issue-agent@issue-agent-v2.0.0
         with:
           src: "./data"
-          provider: "deepseek"
-          model_name: "deepseek-chat"
-          api_key: ${{ secrets.DEEPSEEK_API_KEY }}
-          api_base: "https://api.deepseek.com/v1"
-          github_token: ${{ secrets.TOKEN_GITHUB }}
+          provider: "openai"
+          model_name: "gpt-4o-mini"
+          api_key: ${{ secrets.OPENAI_API_KEY }}
+          github_token: ${{ secrets.TOKEN_GITHUB_NEW }}
           github_repo: ${{ github.repository }}
   
   notify:
