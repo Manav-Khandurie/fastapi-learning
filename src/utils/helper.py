@@ -14,6 +14,8 @@ def run_server() -> None:
     """
     logger.info("🚀 Starting Uvicorn server on port 8000")
     try:
+        # Run the Uvicorn server with specified parameters
         uvicorn.run("src.main:app", port=8000, reload=settings.reload, workers=4)
     except Exception as e:
+        # Log any exceptions that occur during server startup
         logger.exception(f"❌ Failed to start server: {e}")

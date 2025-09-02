@@ -4,4 +4,4 @@ from src.utils.logger import logger
 
 Base = declarative_base()
 """Base class for SQLAlchemy declarative models."""
-logger.info("⚙️ SQLAlchemy declarative base initialized")
+logger.info("⚙️ SQLAlchemy declarative base initialized")  # Log initialization of SQLAlchemy declarative base

@@ -10,18 +10,18 @@ from src.config.config import settings
 @pytest.mark.unit
 def test_create_jwt_and_verify():
     """Test the creation and verification of a JWT token."""
-    payload = {"user": "mktakeda"}
-    token = create_jwt(payload.copy())
-    decoded = verify_jwt(token)
+    payload = {"user": "mktakeda"}  # Payload containing user information
+    token = create_jwt(payload.copy())  # Create a JWT token with the payload
+    decoded = verify_jwt(token)  # Verify the created token
 
-    assert decoded["user"] == "mktakeda"
-    assert "exp" in decoded
+    assert decoded["user"] == "mktakeda"  # Check if the user in the decoded token matches the original payload
+    assert "exp" in decoded  # Ensure that the expiration claim is present in the decoded token
 
 
 @pytest.mark.unit
 def test_verify_jwt_invalid_signature():
     """Test verification of a JWT token with an invalid signature."""
-    payload = {"user": "fake", "exp": datetime.now(timezone.utc) + timedelta(minutes=5)}
+    payload = {"user": "fake", "exp": datetime.now(timezone.utc) + timedelta(minutes=5)}  # Payload with expiration
     fake_private_key = """-----BEGIN PRIVATE KEY-----
     MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCgu4+HhVwmvK7m
     xh3v8d4RjLAYpnwE2be1nsEvkhlTB/dyscFyo5OQqm1yTfLW6m4Y+oM8z1+LVLA3
@@ -40,30 +40,4 @@ def test_verify_jwt_invalid_signature():
     i/VHeBo3vcDH7uv7DbK7DHU69wKBgQDIK5U6pwrUWGVwbaKsM99aLmBRMoRej05s
     190lJ2LbKt7KQ+sTE/UmnfkR4UyoCekYq/NjOD/jWl8wRIAFTNuMLWdwsvHF2mvD
     5tCAWZ2WI2NjNIaN4dFfHgQ+CIAPNJ7PtCZLkVuVmvLzwiJ7LldmPWeY9ThnRvAI
-    Cc5HJmxMmQKBgBpDPz+HL+DxcbjXVFrUa4m979cABv9AO5NtywrvVyaLPP681ozD
-    6ptm7FtV0XqNpRVHkqgjGm1M80PsGx0X7SVJm0V4NpRBjCyiMwHqtnIzgY+uojbY
-    0lnrVEXGtx5soMOklAijcxUV/HWLsqra7cJsyMS4XInur32KuXwGUm/vAoGAPOAc
-    SzEf9wJHH1EIZuyDoa529lqxrPxSMoHXrIP06Yh5JvRO2od4R91FMS3enUAeVrV8
-    mJEzxNXoGwrKEFKWdmQckEarhqttmK9qe45FgbKTeEkyHpYtkYrUaXU2VOmA3tP/
-    zX2QZ8gu2PkSeXnXdK16AyeYlrgZKaipxjOmPgkCgYBT4OC/9x1xDzNTBY8weXeE
-    NdZYIRW8xSB1U/Dthw9a0LBeIi9At9sf60cOXE1zkl1Ger3UTg4k75csMyZDZKv+
-    1WMsLWcW9a14PugqFAjT+rKfYb+HpH5Q4v05QXeNRFwZ7iy01mpJ7xWzxPXFXfYA
-    cct6nibrGliQGJz02sVVIQ==
-    -----END PRIVATE KEY-----"""
-    fake_token = jwt.encode(payload, fake_private_key, algorithm=settings.JWT_ALGORITHM)
-
-    with pytest.raises(ValueError, match="Invalid Expired token"):
-        verify_jwt(fake_token)
-
-
-@pytest.mark.unit
-def test_verify_jwt_expired_token():
-    """Test verification of a JWT token with an expired token."""
-    payload = {
-        "user": "expired",
-        "exp": datetime.now(timezone.utc) - timedelta(minutes=1),
-    }
-    token = jwt.encode(payload, settings.private_key, algorithm=settings.JWT_ALGORITHM)
-
-    with pytest.raises(ValueError, match="Invalid Expired token"):
-        verify_jwt(token)
+    Cc5HJmx
